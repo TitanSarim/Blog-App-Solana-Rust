@@ -37,5 +37,5 @@ Follow these steps to set up the project locally:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/web3-blog-app.git
+   git clone https://github.com/TitanSarim/Blog-App-Solana-Rust.git
    cd web3-blog-app
