@@ -27,8 +27,8 @@ The **Web3 Blog Application** allows users to create, edit, and delete blog post
 Follow these steps to set up the project locally:
 
 ### Prerequisites
-
-- Node.js & npm
+ 
+- Node.js & npm & yarn
 - Rust & Cargo
 - Solana CLI
 - Phantom Wallet (or any Solana-compatible wallet)
