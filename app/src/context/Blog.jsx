@@ -29,6 +29,9 @@ export const BlogProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [initialized, setInitialized] = useState(false);
   const [transactionPending, setTransactionPending] = useState(false)
+  const [showModel, setShowModel] = useState(false)
+  const [lastPostId, setLastPostId] = useState(0)
+  const [posts, setPosts] = useState([])
 
   const anchorWallet = useAnchorWallet()
   const {connection} = useConnection(); 
@@ -46,12 +49,16 @@ export const BlogProvider = ({ children }) => {
       if(program && publicKey){
         try {
           setTransactionPending(true)
-          const [userPta] = await findProgramAddressSync([utf8.encode('user'), publicKey.toBuffer()], program.programId)
+          const [userPta] =  findProgramAddressSync([utf8.encode('user'), publicKey.toBuffer()], program.programId)
           const user = await program.account.userAccount.fetch(userPta);
           if(user){
             setInitialized(true)
             setUser(user)
+            setLastPostId(user.lastPostId)
           }
+
+          const postAccount = await program.account.postAccount.all()
+          setPosts(postAccount)
         } catch (error) {
             console.log("No user", error)
             setInitialized(false)
@@ -70,7 +77,7 @@ export const BlogProvider = ({ children }) => {
         setTransactionPending(true)
         const name = getRandomName()
         const avatar = getAvatarUrl(name)
-        const [userPta] = await findProgramAddressSync([utf8.encode('user'), publicKey.toBuffer()], program.programId)
+        const [userPta] =  findProgramAddressSync([utf8.encode('user'), publicKey.toBuffer()], program.programId)
 
         console.log("userPta", userPta)
 
@@ -91,12 +98,44 @@ export const BlogProvider = ({ children }) => {
     }
   }
 
+  const createPost = async (title, content) => {
+
+    if(program && publicKey){
+      setTransactionPending(true)
+      try {
+        const [userPta] = findProgramAddressSync([utf8.encode('user'), publicKey.toBuffer()], program.programId)
+        const [postPta] = findProgramAddressSync([utf8.encode('post'), publicKey.toBuffer(), Uint8Array.from([lastPostId])], program.programId)
+
+        await program.methods
+          .createPost(title, content)
+          .accounts({
+            postAccount: postPta,
+            userAccount: userPta,
+            authority: publicKey,
+            SystemProgram: SystemProgram.programId
+          }).rpc()
+
+          setShowModel(false);
+
+      } catch (error) {
+          console.log(error)
+      }finally{
+        setTransactionPending(false)
+      }
+    } 
+  }
+
+
   return (
     <BlogContext.Provider
       value={{
         user,
         initialized,
-        nitUser
+        nitUser,
+        showModel,
+        setShowModel,
+        createPost,
+        posts
       }}
     >
       {children}

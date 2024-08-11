@@ -15,20 +15,10 @@ export const Dashboard = () => {
   const [postTitle, setPostTitle] = useState("")
   const [postContent, setPostContent] = useState("")
 
-  const {user, initialized, nitUser} = useBlog()
+  const {user, initialized, nitUser, showModel, setShowModel, createPost, posts} = useBlog()
   
-  
-  const posts = []
 
-  const createPost = () => {
 
-  }
-
-  const showModal = false
-  const setShowModal = () => {
-
-  }
-  /////////////////
 
   const onConnect = () => {
     setConnecting(true)
@@ -72,7 +62,7 @@ export const Dashboard = () => {
                   <Button
                     className="ml-3 mr-2"
                     onClick={() => {
-                      setShowModal(true)
+                      setShowModel(true)
                     }}
                   >
                     Create Post
@@ -172,10 +162,10 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className={`modal ${showModal && 'show-modal'}`} >
+        <div className={`modal ${showModel && 'show-modal'}`} >
           <div className="modal-content">
             <span className="close-button"
-              onClick={() => setShowModal(false)}
+              onClick={() => setShowModel(false)}
             >×</span>
             <PostForm
               postTitle={postTitle}
